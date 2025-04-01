@@ -30,9 +30,49 @@ files:
 docker run --env CONTAINER_INIT_CONF="$CONTAINER_INIT_CONF" glenn/aws-init-container
 ```
 
-ECS Example:
+ECS Task Definition excerpt example:
 ```json
-
+{
+    "volumes": [
+        {"name": "config"}
+    ],
+    "containerDefinitions": [
+        {
+            "name": "init",
+            "image": "glenn/aws-init-container:1.0.0",
+            "mountPoints": [
+                {
+                    "containerPath": "/conf",
+                    "sourceVolume": "config",
+                    "readOnly": null
+                }
+            ],
+            "environment": [
+                {
+                    "name": "CONTAINER_INIT_CONF",
+                    "value": "files:\n  /conf/db.conf:\n    source_arn: arn:aws:secretsmanager:us-west-2:111111222222:secret:dbconf-gsjaUR"
+                }
+            ]
+        },
+        {
+            # Configure your workload container here
+            "name": "main",
+            "dependsOn": [
+                {
+                    "containerName": "init",
+                    "condition": "COMPLETE"
+                }
+            ],
+            "mountPoints": [
+                {
+                    "containerPath": "/conf",
+                    "sourceVolume": "config",
+                    "readOnly": null
+                }
+            ]
+        }
+    ]
+}
 ```
 
 ## Configuration
