@@ -1,0 +1,14 @@
+services:
+  buildenv:
+    image: rust:1-bookworm
+    restart: on-failure
+    command: bash
+    tty: true
+    stop_signal: SIGKILL
+    volumes:
+      - ./:/src
+    working_dir: /src
+    environment:
+      AWS_ACCESS_KEY_ID: dummy
+      AWS_DEFAULT_REGION: dummy
+      AWS_SECRET_ACCESS_KEY: dummy

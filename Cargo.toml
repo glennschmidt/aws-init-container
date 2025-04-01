@@ -1,0 +1,9 @@
+[package]
+name = "aws-init-container"
+version = "1.0.0"
+edition = "2021"
+authors = ["Glenn Schmidt"]
+repository = "https://github.com/glennschmidt/aws-init-container"
+license = "MIT"
+
+[dependencies]
