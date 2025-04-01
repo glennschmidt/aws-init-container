@@ -7,3 +7,13 @@ repository = "https://github.com/glennschmidt/aws-init-container"
 license = "MIT"
 
 [dependencies]
+anyhow = "1.0"
+aws-config = "1.0"
+aws-sdk-secretsmanager = "1.0"
+clap = { version = "4.0", features = ["derive"] }
+log = "0.4"
+serde = { version = "1.0", features = ["derive"] }
+serde_yml = "0.0.12"
+simple_logger = "5.0"
+thiserror = "1.0"
+tokio = { version = "1.40", features = ["macros"] }

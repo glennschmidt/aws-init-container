@@ -1,0 +1,33 @@
+#!/bin/bash
+
+set -e
+
+if [[ "$1" != "" ]]; then
+  # Version tag specified. Build multi-platform docker image and push to registry.
+
+  BUILDER=multiarch
+  IMAGE_NAME="glenn/aws-init-container"
+  IMAGE_VERSION="$1"
+
+  if ! docker buildx inspect "$BUILDER" >/dev/null 2>&1
+  then
+      docker buildx create --name "$BUILDER" --driver docker-container --bootstrap
+  fi
+
+  docker buildx build --pull "--builder=$BUILDER" "--platform=linux/amd64,linux/arm64" "--tag=$IMAGE_NAME:latest" "--tag=$IMAGE_NAME:$IMAGE_VERSION" --push .
+
+else
+  # No argument. Build binaries for both platforms and dump them in the project directory.
+
+  for arch in amd64 arm64; do
+    echo
+    echo "Building for $arch"
+    echo
+    docker run --rm --platform=linux/$arch --mount type=bind,source="$(pwd)",target=/src --workdir=/src rust:1-alpine sh -c "\
+      apk add musl-dev
+      cargo build --release --target-dir=/srv/build \
+      && cp -R /srv/build/release/aws-init-container /src/aws-init-container_linux_$arch \
+    "
+  done
+
+fi
